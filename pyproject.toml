@@ -1,0 +1,56 @@
+[build-system]
+requires = ["poetry>=1.0"]
+build-backend = "poetry.masonry.api"
+
+[tool.poetry]
+name = "validate-devschema"
+version = "0.1.0"
+description = "A lightweight DevContainer JSON Schema validator."
+authors = ["John Ajera"]
+license = "MIT"
+readme = "README.md"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent"
+]
+keywords = ["json-schema", "validation", "devcontainer", "cli"]
+package-mode = false
+packages = [{ include = "validate_devschema", from = "src" }]
+
+[tool.poetry.dependencies]
+python = ">=3.8"
+click = "^8.0.0"
+jsonschema = "^4.0.0"
+requests = "^2.25.0"
+validators = "^0.18.0"
+urllib3 = "^1.26.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^6.0.0"
+pytest-cov = "^3.0.0"
+black = "^22.0.0"
+flake8 = "^3.9.0"
+mypy = "^0.910"
+
+[tool.poetry.scripts]
+validate-devschema = "validate_devschema.main:main"
+
+[tool.pytest.ini_options]
+addopts = "--strict-markers --disable-warnings --cov=validate_devschema"
+testpaths = ["tests"]
+
+[tool.black]
+line-length = 79
+target-version = ["py39", "py310", "py311", "py312", "py313"]
+
+[tool.flake8]
+max-line-length = 79
+extend-ignore = ["E203", "W503"]
+
+[tool.mypy]
+files = "validate_devschema"
+strict = true
