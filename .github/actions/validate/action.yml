@@ -1,0 +1,35 @@
+name: validate-devschema
+description: "A GitHub Action to validate JSON files against a schema."
+
+inputs:
+  schema:
+    description: "Path or URL to the JSON schema."
+    required: true
+  data:
+    description: "Path or URL to the JSON data."
+    required: true
+  verbose:
+    description: "Enable verbose output."
+    required: false
+    default: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.9"
+
+    - name: Install Poetry
+      run: pip install poetry
+
+    - name: Install Dependencies with Poetry
+      run: poetry install --no-dev
+
+    - name: Run Validation
+      run: |
+        poetry run python -m src.validate_devschema.main \
+          --schema "${{ inputs.schema }}" \
+          --data "${{ inputs.data }}" \
+          ${{ inputs.verbose && "--verbose" || "" }}

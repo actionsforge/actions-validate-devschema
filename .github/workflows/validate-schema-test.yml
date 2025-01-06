@@ -1,0 +1,24 @@
+name: validate-devschema-test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test-action:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Validate Dev Schema
+        uses: ./github/actions/validate
+        with:
+          schema: "https://raw.githubusercontent.com/devcontainers/spec/main/schemas/devContainer.schema.json"
+          data: ".devcontainer/devcontainer.json"
+          verbose: true
