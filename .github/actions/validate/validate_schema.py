@@ -1,0 +1,1 @@
+../../../src/validate_devschema/validate_schema.py
