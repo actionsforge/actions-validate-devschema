@@ -1,0 +1,53 @@
+name: publish-github-action
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish-action:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Validate Action Metadata
+        run: |
+          echo "Validating action.yml..."
+          if [ ! -f action.yml ]; then
+            echo "Error: action.yml not found in the root of the repository."
+            exit 1
+          fi
+          echo "action.yml is valid."
+
+      - name: Generate Release Notes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        id: release_notes
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const tag = context.ref.replace('refs/tags/', '');
+            const { data: commits } = await github.repos.listCommits({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: tag,
+              per_page: 100,
+            });
+
+            // Extract first lines of commit messages
+            const commitTitles = commits.map(commit => `- ${commit.commit.message.split('\n')[0]}`);
+            const releaseNotes = `## Release Notes for ${tag}\n\n${commitTitles.join('\n')}`;
+
+            return releaseNotes;
+
+      - name: Publish Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Publishing GitHub Action release for tag ${{ github.ref_name }}"
+          gh release create "${{ github.ref_name }}" \
+            --title "${{ github.ref_name }}" \
+            --notes "${{ steps.release_notes.outputs.result }}"
