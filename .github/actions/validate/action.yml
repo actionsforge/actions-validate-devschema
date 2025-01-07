@@ -1,4 +1,4 @@
-name: Validate DevSchema
+name: validate-devschema
 description: "A lightweight GitHub Action DevContainer JSON Schema validator."
 
 inputs:
@@ -107,3 +107,7 @@ runs:
           ${{ env.VERBOSE_FLAG }}
         echo "::endgroup::"
       shell: bash
+
+branding:
+  icon: "check-circle"
+  color: "green"
