@@ -89,7 +89,10 @@ runs:
         fi
         echo "::endgroup::"
       shell: bash
-
+    - name: test
+      run: |
+        pwd
+        ls
     - name: Set Verbose Flag
       run: |
         if [ "${{ inputs.verbose }}" = "true" ]; then
