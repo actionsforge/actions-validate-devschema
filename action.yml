@@ -93,6 +93,7 @@ runs:
       run: |
         pwd
         ls
+      shell: bash
     - name: Set Verbose Flag
       run: |
         if [ "${{ inputs.verbose }}" = "true" ]; then
