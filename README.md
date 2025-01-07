@@ -1,8 +1,6 @@
 # Validate DevSchema GitHub Action
 
-![Validate DevSchema Test](https://github.com/actionsforge/actions-validate-devschema/actions/workflows/validate-schema-test.yml/badge.svg)
-
-![ci](https://github.com/actionsforge/actions-validate-devschema/actions/workflows/ci.yml/badge.svg)
+![ci](https://github.com/actionsforge/actions-validate-devschema/actions/workflows/ci.yml/badge.svg) ![Validate DevSchema Test](https://github.com/actionsforge/actions-validate-devschema/actions/workflows/validate-schema-test.yml/badge.svg)
 
 This GitHub Action validates a devcontainer.json file against a schema by first ensuring the JSON is valid.
 
