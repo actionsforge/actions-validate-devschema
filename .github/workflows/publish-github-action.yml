@@ -22,26 +22,36 @@ jobs:
           fi
           echo "action.yml is valid."
 
+      - name: Ensure Tag Exists
+        id: validate_tag
+        run: |
+          # Extract the tag from the GitHub context
+          TAG="${GITHUB_REF#refs/tags/}"
+          if [ -z "$TAG" ]; then
+            echo "Error: No tag found. Ensure you push a valid tag."
+            exit 1
+          fi
+          echo "Tag found: $TAG"
+
       - name: Generate Release Notes
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         id: release_notes
         uses: actions/github-script@v6
         with:
           script: |
             const tag = context.ref.replace('refs/tags/', '');
-            const { data: commits } = await github.repos.listCommits({
+            const { data: commits } = await github.rest.repos.listCommits({
               owner: context.repo.owner,
               repo: context.repo.repo,
               sha: tag,
               per_page: 100,
             });
 
-            // Extract first lines of commit messages
+            // Extract commit titles
             const commitTitles = commits.map(commit => `- ${commit.commit.message.split('\n')[0]}`);
             const releaseNotes = `## Release Notes for ${tag}\n\n${commitTitles.join('\n')}`;
-
             return releaseNotes;
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish Release
         env:
