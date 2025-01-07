@@ -1,35 +1,109 @@
-name: validate-devschema
-description: "A GitHub Action to validate JSON files against a schema."
+name: Validate DevSchema
+description: "A lightweight GitHub Action DevContainer JSON Schema validator."
 
 inputs:
   schema:
     description: "Path or URL to the JSON schema."
-    required: true
+    required: false
+    default: "https://raw.githubusercontent.com/devcontainers/spec/main/schemas/devContainer.schema.json"
   data:
     description: "Path or URL to the JSON data."
-    required: true
+    required: false
+    default: ".devcontainer/devcontainer.json"
   verbose:
     description: "Enable verbose output."
     required: false
     default: false
+  python-version:
+    description: |
+      Python version to use. Must be one of the following:
+      - 3.9
+      - 3.10
+      - 3.11
+      - 3.12
+      - 3.13
+    required: false
+    default: "3.13"
 
 runs:
   using: "composite"
   steps:
-    - name: Set up Python
+    - name: Validate Python Version
+      run: |
+        echo "::group::Validate Python Version"
+        ALLOWED_VERSIONS=("3.9" "3.10" "3.11" "3.12" "3.13")
+        PYTHON_VERSION="${{ inputs.python-version }}"
+
+        # Use default if input is not set
+        if [ -z "$PYTHON_VERSION" ]; then
+          PYTHON_VERSION="3.13"
+        fi
+
+        # Validate against allowed versions
+        if [[ ! " ${ALLOWED_VERSIONS[@]} " =~ " $PYTHON_VERSION " ]]; then
+          echo "Error: Python version '$PYTHON_VERSION' is not allowed. Allowed versions are: ${ALLOWED_VERSIONS[*]}."
+          exit 1
+        fi
+
+        echo "Python version '$PYTHON_VERSION' is valid."
+        echo "::endgroup::"
+      shell: bash
+
+    - name: Set Up Python
       uses: actions/setup-python@v4
       with:
-        python-version: "3.9"
+        python-version: "${{ inputs.python-version }}"
 
-    - name: Install Poetry
-      run: pip install poetry
+    - name: Install Poetry via pip
+      run: |
+        echo "::group::Install Poetry"
+        if [ "${{ inputs.verbose }}" = "true" ]; then
+          pip install poetry
+        else
+          pip install poetry > /dev/null 2>&1
+        fi
+        echo "::endgroup::"
+      shell: bash
+
+    - name: Configure Poetry
+      run: |
+        echo "::group::Configure Poetry"
+        if [ "${{ inputs.verbose }}" = "true" ]; then
+          curl -sSL https://install.python-poetry.org | python -
+          echo "PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
+        else
+          curl -sSL https://install.python-poetry.org | python - > /dev/null 2>&1
+          echo "PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
+        fi
+        echo "::endgroup::"
+      shell: bash
 
     - name: Install Dependencies with Poetry
-      run: poetry install --no-dev
-
-    - name: Run Validation
       run: |
+        echo "::group::Install Dependencies"
+        if [ "${{ inputs.verbose }}" = "true" ]; then
+          poetry install --with dev
+        else
+          poetry install --with dev > /dev/null 2>&1
+        fi
+        echo "::endgroup::"
+      shell: bash
+
+    - name: Set Verbose Flag
+      run: |
+        if [ "${{ inputs.verbose }}" = "true" ]; then
+          echo "VERBOSE_FLAG=--verbose" >> $GITHUB_ENV
+        else
+          echo "VERBOSE_FLAG=" >> $GITHUB_ENV
+        fi
+      shell: bash
+
+    - name: Validate DevContainer JSON Schema
+      run: |
+        echo "::group::Validate JSON Schema"
         poetry run python -m src.validate_devschema.main \
           --schema "${{ inputs.schema }}" \
           --data "${{ inputs.data }}" \
-          ${{ inputs.verbose && "--verbose" || "" }}
+          ${{ env.VERBOSE_FLAG }}
+        echo "::endgroup::"
+      shell: bash

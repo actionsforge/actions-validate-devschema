@@ -40,6 +40,7 @@ VENV_BIN_PATH="/workspaces/test/.venv/bin"
 if ! grep -Fxq "export PATH=$VENV_BIN_PATH:\$PATH" ~/.bashrc; then
     echo "Adding Poetry virtual environment to PATH..."
     echo "export PATH=$VENV_BIN_PATH:\$PATH" >> ~/.bashrc
+    export PATH="$VENV_BIN_PATH:$PATH"
 fi
 
 # Load the updated bashrc configuration for the current session

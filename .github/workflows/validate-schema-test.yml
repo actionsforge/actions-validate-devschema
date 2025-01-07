@@ -16,9 +16,9 @@ jobs:
         with:
           ref: ${{ github.ref }}
 
-      - name: Validate Dev Schema
-        uses: ./github/actions/validate
-        with:
-          schema: "https://raw.githubusercontent.com/devcontainers/spec/main/schemas/devContainer.schema.json"
-          data: ".devcontainer/devcontainer.json"
-          verbose: true
+      - name: Run Validate Dev Schema Action
+        uses: ./.github/actions/validate
+        # with:
+        #   schema: "https://raw.githubusercontent.com/devcontainers/spec/main/schemas/devContainer.schema.json"
+        #   data: ".devcontainer/devcontainer.json"
+        #   verbose: true
