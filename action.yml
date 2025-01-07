@@ -82,13 +82,25 @@ runs:
     - name: Install Dependencies with Poetry
       run: |
         echo "::group::Install Dependencies"
+        echo "Current directory:"
+        pwd
+
+        echo "Changing to GITHUB_ACTION_PATH: $GITHUB_ACTION_PATH"
+        cd $GITHUB_ACTION_PATH
+
+        echo "Directory after changing:"
+        pwd
+
+        if [ ! -f pyproject.toml ]; then
+          echo "Error: pyproject.toml not found in the working directory."
+          exit 1
+        fi
+
         if [ "${{ inputs.verbose }}" = "true" ]; then
           poetry install --with dev
         else
           poetry install --with dev > /dev/null 2>&1
         fi
-        pwd
-        ls
         echo "::endgroup::"
       shell: bash
 
@@ -104,13 +116,19 @@ runs:
     - name: Validate DevContainer JSON Schema
       run: |
         echo "::group::Validate JSON Schema"
+        echo "Current directory:"
+        pwd
+
+        echo "Changing to GITHUB_ACTION_PATH: $GITHUB_ACTION_PATH"
+        cd $GITHUB_ACTION_PATH
+
+        echo "Directory after changing:"
+        pwd
+
         poetry run python -m src.validate_devschema.main \
           --schema "${{ inputs.schema }}" \
           --data "${{ inputs.data }}" \
           ${{ env.VERBOSE_FLAG }}
+
         echo "::endgroup::"
       shell: bash
-
-branding:
-  icon: "check-circle"
-  color: "green"

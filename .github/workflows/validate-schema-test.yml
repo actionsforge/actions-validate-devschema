@@ -6,21 +6,84 @@ on:
       - main
   pull_request:
   schedule:
-    - cron: 0 12 30 * *
+    - cron: '0 12 30 * *'
   workflow_dispatch:
 
 jobs:
   test-action:
     runs-on: ubuntu-latest
+    env:
+      PYTHON_VERSION: "3.13"
+      SCHEMA_FILE: "https://raw.githubusercontent.com/devcontainers/spec/main/schemas/devContainer.schema.json"
+      DATA_FILE: ".devcontainer/devcontainer.json"
+      VERBOSE: "false"
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref }}
 
-      - name: Run Validate Dev Schema Action
-        uses: ./.github/actions/validate
-        # with:
-        #   schema: "https://raw.githubusercontent.com/devcontainers/spec/main/schemas/devContainer.schema.json"
-        #   data: ".devcontainer/devcontainer.json"
-        #   verbose: true
+      - name: Set Up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Poetry via pip
+        run: |
+          echo "::group::Install Poetry"
+          if [[ "$VERBOSE" == "true" ]]; then
+            pip install poetry
+          else
+            pip install poetry > /dev/null 2>&1
+          fi
+          echo "::endgroup::"
+        shell: bash
+
+      - name: Configure Poetry
+        run: |
+          echo "::group::Configure Poetry"
+          if [[ "$VERBOSE" == "true" ]]; then
+            curl -sSL https://install.python-poetry.org | python -
+          else
+            curl -sSL https://install.python-poetry.org | python - > /dev/null 2>&1
+          fi
+          echo "PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
+          echo "::endgroup::"
+        shell: bash
+
+      - name: Install Dependencies with Poetry
+        run: |
+          echo "::group::Install Dependencies"
+          if [[ "$VERBOSE" == "true" ]]; then
+            poetry install --with dev
+          else
+            poetry install --with dev > /dev/null 2>&1
+          fi
+          pwd
+          ls
+          echo "::endgroup::"
+        shell: bash
+
+      - name: Set Verbose Mode
+        run: |
+          echo "::group::Set Verbose Mode"
+          if [[ "$VERBOSE" == "true" ]]; then
+            echo "Verbose mode enabled."
+          else
+            echo "Verbose mode disabled."
+          fi
+          echo "::endgroup::"
+        shell: bash
+
+      - name: Validate DevContainer JSON Schema
+        run: |
+          echo "::group::Validate JSON Schema"
+          poetry run python -m src.validate_devschema.main \
+            --schema "$SCHEMA_FILE" \
+            --data "$DATA_FILE" \
+            $([[ "$VERBOSE" == "true" ]] && echo "--verbose")
+          echo "::endgroup::"
+        shell: bash
+
+branding:
+  icon: "check-circle"
+  color: "green"
