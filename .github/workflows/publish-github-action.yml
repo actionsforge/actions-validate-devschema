@@ -41,5 +41,5 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          title: "Release-${{ github.ref_name }}"
+          title: "${{ github.ref_name }}"
           prerelease: true
