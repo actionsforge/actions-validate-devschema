@@ -87,15 +87,11 @@ runs:
         else
           poetry install --with dev > /dev/null 2>&1
         fi
-        echo "::endgroup::"
-      shell: bash
-    - name: test
-      run: |
-        echo "::group::test"
         pwd
         ls
         echo "::endgroup::"
       shell: bash
+
     - name: Set Verbose Flag
       run: |
         if [ "${{ inputs.verbose }}" = "true" ]; then
