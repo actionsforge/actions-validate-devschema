@@ -83,7 +83,3 @@ jobs:
             $([[ "$VERBOSE" == "true" ]] && echo "--verbose")
           echo "::endgroup::"
         shell: bash
-
-branding:
-  icon: "check-circle"
-  color: "green"
