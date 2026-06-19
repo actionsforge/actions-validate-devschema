@@ -23,8 +23,9 @@ inputs:
       - 3.11
       - 3.12
       - 3.13
+      - 3.14
     required: false
-    default: "3.13"
+    default: "3.14"
 
 runs:
   using: "composite"
@@ -32,12 +33,12 @@ runs:
     - name: Validate Python Version
       run: |
         echo "::group::Validate Python Version"
-        ALLOWED_VERSIONS=("3.9" "3.10" "3.11" "3.12" "3.13")
+        ALLOWED_VERSIONS=("3.9" "3.10" "3.11" "3.12" "3.13" "3.14")
         PYTHON_VERSION="${{ inputs.python-version }}"
 
         # Use default if input is not set
         if [ -z "$PYTHON_VERSION" ]; then
-          PYTHON_VERSION="3.13"
+          PYTHON_VERSION="3.14"
         fi
 
         # Validate against allowed versions
@@ -51,7 +52,7 @@ runs:
       shell: bash
 
     - name: Set Up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 #v6.2.0
       with:
         python-version: "${{ inputs.python-version }}"
 
