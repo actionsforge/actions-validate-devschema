@@ -32,7 +32,7 @@ urllib3 = "^1.26.0"
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.0"
 pytest-cov = "^6.0.0"
-black = "^25.0.0"
+black = ">=25,<27"
 flake8 = "^7.0.0"
 mypy = "^1.11.0"
 
