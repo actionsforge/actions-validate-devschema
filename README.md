@@ -13,7 +13,7 @@ This GitHub Action validates a devcontainer.json file against a schema by first 
 | `schema` | Path or URL to the JSON schema. | No | `https://raw.githubusercontent.com/devcontainers/spec/main/schemas/devContainer.schema.json` |
 | `data` | Path or URL to the JSON data. | No | `devcontainer/devcontainer.json` |
 | `verbose` | Enable verbose output (true/false). | No | `false` |
-| `python-version` | Python version to use. Allowed versions are: 3.9, 3.10, 3.11, 3.12, 3.13, 3.14. | No | `3.14` |
+| `python-version` | Python version to use. Allowed versions are: 3.10, 3.11, 3.12, 3.13, 3.14. | No | `3.14` |
 
 ## Usage
 

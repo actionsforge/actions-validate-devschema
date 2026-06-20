@@ -31,26 +31,21 @@ jobs:
         run: |
           echo "::group::Install Poetry"
           if [[ "$VERBOSE" == "true" ]]; then
-            pip install poetry
+            python -m pip install --upgrade pip
+            python -m pip install "poetry==1.8.5"
+            poetry --version
           else
-            pip install poetry > /dev/null 2>&1
+            python -m pip install --upgrade pip > /dev/null 2>&1
+            python -m pip install "poetry==1.8.5" > /dev/null 2>&1
+            poetry --version > /dev/null 2>&1
           fi
-          echo "::endgroup::"
-        shell: bash
-
-      - name: Configure Poetry
-        run: |
-          echo "::group::Configure Poetry"
-          if [[ "$VERBOSE" == "true" ]]; then
-            curl -sSL https://install.python-poetry.org | python -
-          else
-            curl -sSL https://install.python-poetry.org | python - > /dev/null 2>&1
-          fi
-          echo "PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
           echo "::endgroup::"
         shell: bash
 
       - name: Install Dependencies with Poetry
+        env:
+          # Needed for rpds-py builds on CPython 3.14 until upstream wheels/tooling catch up.
+          PYO3_USE_ABI3_FORWARD_COMPATIBILITY: "1"
         run: |
           echo "::group::Install Dependencies"
           if [[ "$VERBOSE" == "true" ]]; then
