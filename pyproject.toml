@@ -27,7 +27,7 @@ click = "^8.0.0"
 jsonschema = "^4.0.0"
 requests = "^2.25.0"
 validators = "^0.18.0"
-urllib3 = "^1.26.0"
+urllib3 = "^2.7.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.0"
